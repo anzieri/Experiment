@@ -13,15 +13,12 @@ def anything():
 
 def server_program():
     # get the hostname
-    name = socket.gethostname()
-    host = socket.gethostbyname(name)
+    host = socket.gethostname()
     port = 5001  # initiate port no above 1024
 
-    # [WinError 10048] Only one usage of each socket address(protocol / networkaddress / port) is normally permitted
     print(host)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # get instance
     # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    # look closely. The bind() function takes tuple as argument
     server_socket.bind((host, port))  # bind host address and port together
 
     # configure how many client the server can listen simultaneously
