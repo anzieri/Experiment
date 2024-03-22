@@ -35,9 +35,12 @@ def connect_client():
     return "Connected to server."
 
 def get_server_ip():
-    # Fetch the server's public IP address (e.g., from Render environment variables)
-    # Replace this with your actual logic to get the IP address
-    return '100.20.92.101'
+    if (host == '100.20.92.101'):  
+        return '100.20.92.101'
+    elif  host == '44.225.181.72':
+        return '44.225.181.72'
+    else:
+        return '44.227.217.144'
 
 if __name__ == '__main__':
     host = get_server_ip()
