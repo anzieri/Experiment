@@ -21,7 +21,7 @@ def submit():
 
 @app.route('/receive', methods=['GET', 'POST'])
 def run_server():
-    host = '192.168.0.13'  # Replace with your server's IP address
+    host = '0.0.0.0'   # Replace with your server's IP address
     port = 5001
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
