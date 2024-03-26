@@ -13,8 +13,8 @@ def anything():
 
 def server_program():
     # get the hostname
-    # host = socket.gethostname()
-    host ='100.20.92.101'
+    # host = socket.gethostname() '100.20.92.101'
+    host = '0.0.0.0'
     port = 5001  # initiate port no above 1024
 
     print(host)
@@ -47,7 +47,7 @@ def nix():
     return 'Wait a minute'
 
 
-mode = "prod"
+mode = "dev"
 
 if __name__ == '__main__':
     if mode == "dev":
