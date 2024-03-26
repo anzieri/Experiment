@@ -1,54 +1,90 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template, jsonify
 from waitress import serve
 import socket
+import threading  # For handling socket communication in a separate thread
 
-app = Flask(__name__)
-
-
-@app.route('/home', methods=['GET', 'POST'])
-def anything():
-    print("Done")
-    return "Let's do this"
+app = Flask(__name__, template_folder='templates')
+connected_clients = {}
 
 
-def server_program():
-    # get the hostname
-    # host = socket.gethostname() '100.20.92.101'
-    host = '0.0.0.0'
-    port = 5001  # initiate port no above 1024
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
 
-    print(host)
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # get instance
-    # server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind((host, port))  # bind host address and port together
 
-    # configure how many client the server can listen simultaneously
+@app.route('/submit', methods=['GET', 'POST'])
+def submit():
+    data = request.form['data']
+    # Process or store the data as needed (optional)
+    return render_template('index.html', submitted_data=data)
+
+
+@app.route('/receive', methods=['GET', 'POST'])
+def run_server():
+    host = '192.168.0.13'  # Replace with your server's IP address
+    port = 5001
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind((host, port))
     server_socket.listen(3)
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
+
+    print(f"Server listening on {host}:{port}")
+
     while True:
-        # receive data stream. it won't accept data packet greater than 1024 bytes
+        conn, address = server_socket.accept()
+        print("Connection from: " + str(address))
+        # Start a separate thread to handle each client connection
+        client_thread = threading.Thread(target=handle_client, args=(conn,))
+        client_thread.start()
+
+
+def handle_client(conn):
+    username = conn.recv(1024).decode()  # Receive username from client
+    connected_clients[conn] = username  # Store connection and username
+    print(f"Client connected: {username}")
+
+    while True:
         data = conn.recv(1024).decode()
         if not data:
-            # if data is not received break
             break
-        print("from connected user: " + str(data))
-        data = input(' -> ')
-        conn.send(data.encode())  # send data to the client
 
-    conn.close()  # close the connection
+        # Extract recipient username and message
+        recipient, message = data.split(':', 1)
+
+        # Check if recipient is online
+        if recipient in connected_clients:
+            recipient_conn = [c for c, u in connected_clients.items() if u == recipient][0]
+            try:
+                recipient_conn.send(f"{username}: {message}".encode())
+            except ConnectionAbortedError:
+                print(f"Client {recipient} disconnected")
+                del connected_clients[recipient_conn]  # Remove disconnected client
+        else:
+            conn.send(f"Recipient '{recipient}' not found".encode())
+
+    conn.close()
+    del connected_clients[conn]  # Remove disconnected client
+    print(f"Client disconnected: {username}")
 
 
-server_program()
+# def handle_client(conn):
+#     while True:
+#         data = conn.recv(1024).decode()
+#         if not data:
+#             break
+#         print("from connected user: " + str(data))
+#
+#         # Process or store the received data here (optional)
+#
+#         # Send a response back to the client
+#         response = f"Server received: {data}"
+#         conn.send(response.encode())
+#
+#     conn.close()
 
 
-@app.route('/api')
-def nix():
-    return 'Wait a minute'
-
-
-mode = "dev"
-
+mode = 'dev'
 if __name__ == '__main__':
     if mode == "dev":
         app.run(host='0.0.0.0', port=5001, debug=True)
