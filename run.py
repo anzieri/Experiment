@@ -1,3 +1,3 @@
-from main import hello, get_server_ip, handle_client, connect_client, app
+from main import hello
 
 app = hello()
