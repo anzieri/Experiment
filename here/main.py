@@ -22,7 +22,7 @@ def submit():
 @app.route('/receive', methods=['GET', 'POST'])
 def run_server():
     host = '0.0.0.0'  # Replace with your server's IP address
-    port = 5001
+    port = 10000
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -87,6 +87,6 @@ def handle_client(conn):
 mode = 'dev'
 if __name__ == '__main__':
     if mode == "dev":
-        app.run(host='0.0.0.0', port=5001, debug=True)
+        app.run(host='0.0.0.0', port=10000, debug=True)
     else:
-        serve(app, host='0.0.0.0', port=5001)
+        serve(app, host='0.0.0.0', port=10000)
