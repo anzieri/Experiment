@@ -1,5 +1,4 @@
-from flask import Flask
-# request
+from flask import Flask, request
 import socket
 
 app = Flask(__name__)
@@ -35,26 +34,26 @@ def handle_client(conn):
 
 @app.route('/connect', methods=['POST'])
 def connect_client():
+    port =5001
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((get_server_ip(), port))
     active_connections.append(client_socket)
     return "Connected to server."
 
 def get_server_ip():
-    return socket.gethostbyname(socket.gethostname())
+    host = '0.0.0.0'
+    return host
 
 if __name__ == '__main__':
-    # rules = hello()
-    print("Success")
-#     host = get_server_ip()
-#     port = 5001
-#     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     server_socket.bind((host, port))
-#     server_socket.listen(3)
-#     print(f"Server listening on {host}:{port}")
+    host = get_server_ip()
+    port = 5001
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    server_socket.listen(3)
+    print(f"Server listening on {host}:{port}")
 
-#     while True:
-#         conn, address = server_socket.accept()
-#         print(f"Connection from: {address}")
-#         active_connections.append(conn)
-#         handle_client(conn)
+    while True:
+        conn, address = server_socket.accept()
+        print(f"Connection from: {address}")
+        active_connections.append(conn)
+        handle_client(conn)
