@@ -1,4 +1,5 @@
-from flask import Flask, request
+from flask import Flask
+# request
 import socket
 
 app = Flask(__name__)
@@ -43,7 +44,7 @@ def hello():
 #     return socket.gethostbyname(socket.gethostname())
 
 if __name__ == '__main__':
-    rules = hello()
+    # rules = hello()
     print("Success")
 #     host = get_server_ip()
 #     port = 5001
