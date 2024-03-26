@@ -4,7 +4,7 @@ import socket
 
 app = Flask(__name__)
 
-@app.route('/word', methods=['POST'])
+@app.route('/word', methods=['GET'])
 def hello():
     print("Are you smart enough?")
     return "Hello, World!"
