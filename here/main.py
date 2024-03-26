@@ -21,7 +21,7 @@ def submit():
 
 @app.route('/receive', methods=['GET', 'POST'])
 def run_server():
-    host = '0.0.0.0'   # Replace with your server's IP address
+    host = '0.0.0.0'  # Replace with your server's IP address
     port = 5001
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,49 +39,49 @@ def run_server():
         client_thread.start()
 
 
-def handle_client(conn):
-    username = conn.recv(1024).decode()  # Receive username from client
-    connected_clients[conn] = username  # Store connection and username
-    print(f"Client connected: {username}")
-
-    while True:
-        data = conn.recv(1024).decode()
-        if not data:
-            break
-
-        # Extract recipient username and message
-        recipient, message = data.split(':', 1)
-
-        # Check if recipient is online
-        if recipient in connected_clients:
-            recipient_conn = [c for c, u in connected_clients.items() if u == recipient][0]
-            try:
-                recipient_conn.send(f"{username}: {message}".encode())
-            except ConnectionAbortedError:
-                print(f"Client {recipient} disconnected")
-                del connected_clients[recipient_conn]  # Remove disconnected client
-        else:
-            conn.send(f"Recipient '{recipient}' not found".encode())
-
-    conn.close()
-    del connected_clients[conn]  # Remove disconnected client
-    print(f"Client disconnected: {username}")
-
-
 # def handle_client(conn):
+#     username = conn.recv(1024).decode()  # Receive username from client
+#     connected_clients[conn] = username  # Store connection and username
+#     print(f"Client connected: {username}")
+#
 #     while True:
 #         data = conn.recv(1024).decode()
 #         if not data:
 #             break
-#         print("from connected user: " + str(data))
 #
-#         # Process or store the received data here (optional)
+#         # Extract recipient username and message
+#         recipient, message = data.split(':', 1)
 #
-#         # Send a response back to the client
-#         response = f"Server received: {data}"
-#         conn.send(response.encode())
+#         # Check if recipient is online
+#         if recipient in connected_clients:
+#             recipient_conn = [c for c, u in connected_clients.items() if u == recipient][0]
+#             try:
+#                 recipient_conn.send(f"{username}: {message}".encode())
+#             except ConnectionAbortedError:
+#                 print(f"Client {recipient} disconnected")
+#                 del connected_clients[recipient_conn]  # Remove disconnected client
+#         else:
+#             conn.send(f"Recipient '{recipient}' not found".encode())
 #
 #     conn.close()
+#     del connected_clients[conn]  # Remove disconnected client
+#     print(f"Client disconnected: {username}")
+
+
+def handle_client(conn):
+    while True:
+        data = conn.recv(1024).decode()
+        if not data:
+            break
+        print("from connected user: " + str(data))
+
+        # Process or store the received data here (optional)
+
+        # Send a response back to the client
+        response = f"Server received: {data}"
+        conn.send(response.encode())
+
+    conn.close()
 
 
 mode = 'dev'
